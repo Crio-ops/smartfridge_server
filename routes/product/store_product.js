@@ -7,14 +7,14 @@ const jwt = require ("jsonwebtoken");
 
 router.post("/", async (req, res) => {
   let product = req.body;
-
+  console.log(product)
   const secretKey = process.env.SECRET_TOKEN_KEY;
 
   const existingProduct = await isProductAlreadyExist(product);
 
   // update the quantity of a product or create it if it not exists
 
-  if (!!existingProduct === false) {
+  if (existingProduct === null) {
     const result = await store_product(product);
   } else {
     console.log("produit déja existant");
@@ -44,17 +44,16 @@ router.post("/", async (req, res) => {
 
   async function isProductAlreadyExist(product) {
     try {
+      console.log('produit dans isPExist', product)
       // Check if the product exists in the db
       const existingProduct = await Food.findOne({
         where: {
           kitchen_id: product.kitchen_id,
           name: product.name,
           brand: product.brand,
-          quantity_unit: product.quantity_unit,
-          quantity: product.quantity,
         },
       });
-
+      console.log('le produit existant : ',existingProduct)
       return existingProduct;
     } catch (error) {
       console.error(
@@ -67,7 +66,9 @@ router.post("/", async (req, res) => {
 
   async function updateProductQuantity(existingProduct, product) {
     try {
+      console.log('la nouvelle QUANTITé',existingProduct, " ", product)
       const newQuantity = existingProduct.quantity + product.quantity;
+      
       await Food.update(
         { quantity: newQuantity },
         {
@@ -84,12 +85,11 @@ router.post("/", async (req, res) => {
       console.log("La quantité du produit a été mise à jour avec succès.");
       return true;
     } catch (error) {
-      return false;
       console.error(
         "Erreur lors de la mise à jour de la quantité du produit en base de données:",
         error
       );
-      throw error;
+      return false;
     }
   }
 });
