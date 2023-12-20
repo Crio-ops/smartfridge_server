@@ -16,9 +16,11 @@ router.post("/", async (req, res) => {
 
   if (existingProduct === null) {
     const result = await store_product(product);
+    res.status(200).json({ result });
   } else {
     console.log("produit déja existant");
     const result = await updateProductQuantity(existingProduct, product);
+    res.status(200).json({ result });
   }
 
   async function store_product(product) {
@@ -32,6 +34,7 @@ router.post("/", async (req, res) => {
         quantity_unit: product.quantity_unit,
         quantity: product.quantity,
         image: product.image,
+        category:product.category,
       });
       console.log("produit créé");
       return true;

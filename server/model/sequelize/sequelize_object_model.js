@@ -42,7 +42,7 @@ const Food = sequelize.define(
     },
     name: DataTypes.TEXT,
     brand: DataTypes.TEXT,
-    type: DataTypes.TEXT,
+    category: DataTypes.TEXT,
     quantity_unit: DataTypes.TEXT,
     keywords: DataTypes.JSON,
     quantity: DataTypes.FLOAT,
@@ -134,13 +134,18 @@ const Products_Families = sequelize.define(
   }
 );
 
-const Fruits_Vegetables_Categories = sequelize.define(
-  "fruits_vegetables_categories",
+const Products_Categories = sequelize.define(
+  "products_categories",
   {
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
+    },
+    id_family: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      unique: true,
     },
     category_name_fr: DataTypes.TEXT,
     category_name_nl: DataTypes.TEXT,
@@ -148,132 +153,49 @@ const Fruits_Vegetables_Categories = sequelize.define(
   },
   {
     timestamps: false,
-    tableName: "fruits_vegetables_categories",
+    tableName: "products_categories",
   }
 );
 
-const Meat_Fish_Eggs_Categories = sequelize.define(
-  "meat_fish_eggs_categories",
+const Recipes = sequelize.define(
+  "recipes", 
   {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    category_name_fr: DataTypes.TEXT,
-    category_name_nl: DataTypes.TEXT,
-    category_name_en: DataTypes.TEXT,
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
   },
-  {
-    timestamps: false,
-    tableName: "meat_fish_eggs_categories",
-  }
+  title: DataTypes.STRING,
+
+  description: DataTypes.STRING,
+  instructions:DataTypes.TEXT,
+  prep_time: DataTypes.INTEGER,  
+  cook_time: DataTypes.INTEGER,
+  total_time: DataTypes.INTEGER,
+  servings:DataTypes.INTEGER,
+},
+{
+  timestamps: false,
+  tableName: "recipes",
+}
 );
 
-const Milk_Products_Categories = sequelize.define(
-  "milk_products_categories",
+const Ingredients = sequelize.define(
+  "ingredients", 
   {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    category_name_fr: DataTypes.TEXT,
-    category_name_nl: DataTypes.TEXT,
-    category_name_en: DataTypes.TEXT,
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
+  id_recipe : DataTypes.INTEGER,
+  name: DataTypes.TEXT,
+  category: DataTypes.STRING,
+  quantity: DataTypes.TEXT,
   },
   {
     timestamps: false,
-    tableName: "milk_products_categories",
-  }
-);
-
-const Oils_Vinegars_Categories = sequelize.define(
-  "oils_vinegars_categories",
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    category_name_fr: DataTypes.TEXT,
-    category_name_nl: DataTypes.TEXT,
-    category_name_en: DataTypes.TEXT,
-  },
-  {
-    timestamps: false,
-    tableName: "oils_vinegars_categories",
-  }
-);
-
-const Spices_Herbs_Categories = sequelize.define(
-  "spices_herbs_categories",
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    category_name_fr: DataTypes.TEXT,
-    category_name_nl: DataTypes.TEXT,
-    category_name_en: DataTypes.TEXT,
-  },
-  {
-    timestamps: false,
-    tableName: "spices_herbs_categories",
-  }
-);
-
-const Straches_Categories = sequelize.define(
-  "straches_categories",
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    category_name_fr: DataTypes.TEXT,
-    category_name_nl: DataTypes.TEXT,
-    category_name_en: DataTypes.TEXT,
-  },
-  {
-    timestamps: false,
-    tableName: "straches_categories",
-  }
-);
-
-const Sweets_Categories = sequelize.define(
-  "sweets_categories",
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    category_name_fr: DataTypes.TEXT,
-    category_name_nl: DataTypes.TEXT,
-    category_name_en: DataTypes.TEXT,
-  },
-  {
-    timestamps: false,
-    tableName: "sweets_categories",
-  }
-);
-const Drinks_Categories = sequelize.define(
-  "drinks_categories",
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    category_name_fr: DataTypes.TEXT,
-    category_name_nl: DataTypes.TEXT,
-    category_name_en: DataTypes.TEXT,
-  },
-  {
-    timestamps: false,
-    tableName: "drinks_categories",
+    tableName: "ingredients",
   }
 );
 
@@ -284,6 +206,12 @@ Kitchen.hasMany(User_Kitchen, { foreignKey: "kitchen_id" });
 Food.belongsTo(Kitchen, { foreignKey: "kitchen_id" });
 Kitchen.hasMany(Food, { foreignKey: "kitchen_id" });
 
+Products_Categories.belongsTo(Products_Families, { foreignKey: "id_family" });
+Products_Families.hasMany(Products_Categories, { foreignKey: "id_family" });
+
+Recipes.hasMany(Ingredients, { foreignKey: 'id_recipe' });
+Ingredients.belongsTo(Recipes, { foreignKey: 'id_recipe' });
+
 
 module.exports = {
   User,
@@ -292,12 +220,7 @@ module.exports = {
   User_Kitchen,
   Admin,
   Products_Families,
-  Milk_Products_Categories,
-  Meat_Fish_Eggs_Categories,
-  Fruits_Vegetables_Categories,
-  Oils_Vinegars_Categories,
-  Spices_Herbs_Categories,
-  Straches_Categories,
-  Sweets_Categories,
-  Drinks_Categories
+  Products_Categories,
+  Recipes,
+  Ingredients,
 };

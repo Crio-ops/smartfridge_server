@@ -27,17 +27,6 @@ router.post("/", async (req, res) => {
       mail_address: user_to_create.mail_address,
     })
       .then(() => {
-        const user = {
-          username: user_to_create.account_name,
-          firstname: user_to_create.firstname,
-          lastname: user_to_create.lastname,
-          mail_address: user_to_create.mail_address,
-        };
-
-        const token = jwt.sign(user, process.env.SECRET_TOKEN_KEY, {
-          expiresIn: "1h", // Durée de validité du token (par exemple, 1 heure)
-        });
-
         const request = {
           token: token,
           state: { error: false, message: "successful registration" },
@@ -46,18 +35,27 @@ router.post("/", async (req, res) => {
         res.status(200).json({ request });
       })
       .catch(function (error) {
-        if (error.parent.code === "ER_DUP_ENTRY") {
-          console.log("L'ERREUR !!!!!!! : ", error.parent.code);
-          const request = {
-            state: {
-              error: true,
-              message: "account name or mail address allready used",
-            },
-          };
-          res.status(200).json({ request });
+        if (error) {
+          if (error.parent && error.parent.code === "ER_DUP_ENTRY") {
+            console.log("L'ERREUR !!!!!!! : ", error.parent);
+            const request = {
+              state: {
+                error: true,
+                message: "account name or mail address already used",
+              },
+            };
+            res.status(200).json({ request });
+          } else {
+            const request = {
+              state: {
+                error: true,
+                message: "Une erreur est survenue, veuillez recommencer",
+              },
+            };
+            res.status(200).json({ request });
+          }
         }
       });
-    // sequelize.close()
-    }
+  }
 });
 module.exports = router;

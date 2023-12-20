@@ -25,12 +25,6 @@ class QuantityExtractor {
   }
 }
 
-// Exemple d'utilisation
-const quantityExtractor = new QuantityExtractor('5 units');
-const [extractedQuantity, extractedQuantityUnit] = quantityExtractor.extract();
-console.log(extractedQuantity, extractedQuantityUnit);
-
-
 module.exports =  QuantityExtractor ;
 
   

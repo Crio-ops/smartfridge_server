@@ -32,7 +32,7 @@ router.post('/', async (req, res) => {
           include: [
             {
               model: Food,
-              attributes: ['id','name','brand','type','quantity_unit','keywords','quantity', 'image'],
+              attributes: ['id','name','brand','category','quantity_unit','keywords','quantity', 'image'],
             },
           ],
         },
